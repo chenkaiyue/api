@@ -4,6 +4,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/gocrane/api/analysis/v1alpha1"
 )
 
 type AvoidanceActionStrategy string
@@ -14,6 +16,137 @@ const (
 	// AvoidanceActionStrategyPreview is the preview for QosEnsuranceStrategyNone.
 	AvoidanceActionStrategyPreview AvoidanceActionStrategy = "Preview"
 )
+
+// +genclient
+// +genclient:nonNamespaced
+// +kubebuilder:resource:scope=Cluster,shortName=sq
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+type ServiceQOS struct {
+	metav1.TypeMeta `json:",inline"`
+
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec ServiceQOSSpec `json:"spec"`
+
+	Status ServiceQOSEnsurancePolicyStatus `json:"status,omitempty"`
+}
+
+type ServiceQOSSpec struct {
+	//PodQOSClass PodQOSClass  `json:"podQOSClass,omitempty"`
+	//Example: ["Besteffort"]
+	QOSClassSelectors []corev1.PodQOSClass `json:"qosClassSelectors,omitempty"`
+
+	//Example:[1000-2000,3000]
+	PriorityClassSelectors []string `json:"priorityClassSelectors,omitempty"`
+
+	// Selector *metav1.LabelSelector `json:"selector,omitempty"`
+	ResourceSelectors []v1alpha1.ResourceSelector `json:"resourceSelectors,omitempty"`
+
+	ResourceQOS ResourceQOS `json:"resourceQOS,omitempty"`
+
+	//Example: ["Throttle", "Evict"]
+	AllowedNodeQOSActions []string `json:"allowedNodeQOSActions,omitempty"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// ServiceQOSList contains a list of ServiceQOS
+type ServiceQOSList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []ServiceQOS `json:"items"`
+}
+
+type ResourceQOS struct {
+	CPUQOS    *CPUQOSCfg    `json:"cpuQOS,omitempty"`
+	MemoryQOS *MemoryQOSCfg `json:"memoryQOS,omitempty"`
+	NetIOQOS  *NetIOQOSCfg  `json:"netIOQOS,omitempty"`
+	DiskIOQOS *DiskIOQOS    `json:"diskIOQOS,omitempty"`
+}
+
+type CPUQOSCfg struct {
+	// CPUPriority define the cpu priority for the pods.
+	// CPUPriority range [0,7], 0 is the highest level.
+	// When the cpu resource is shortage, the low level pods would be throttled
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=7
+	// +optional
+	CPUPriority *int32 `json:"cpuPriority,omitempty"`
+
+	ContainerPriority *int32 `json:"containerPriority,omitempty"`
+
+	CPUBurstCfg CPUBurstCfg `json:"cpuBurstCfg,omitempty"`
+
+	HtIsolateCfg HtIsolateCfg `json:"htIsolateCfg,omitempty"`
+
+	CPUSetPolicyCfg CPUSetPolicyCfg `json:"cpuSetPolicyCfg,omitempty"`
+
+	RDTCfg RDTCfg `json:"rdtCfg,omitempty"`
+}
+
+type RDTCfg struct {
+	L3 string `json:"l3,omitempty"`
+	MB string `json:"mb,omitempty"`
+}
+
+type CPUSetPolicyCfg struct {
+	// none/exclusive/share
+	CPUSetPolicy string `json:"cpuSetPolicy,omitempty"`
+}
+
+type HtIsolateCfg struct {
+	HtIsolateEnable bool `json:"htIsolateEnable,omitempty"`
+}
+
+type CPUBurstCfg struct {
+	// BurstQuota define the burst quota for the pods.
+	BurstQuota string `json:"burstQuota,omitempty"`
+
+	//BurstToOtherCpu bool
+}
+
+type MemoryQOSCfg struct {
+	MemAsyncReclaim MemAsyncReclaim `json:"memAsyncReclaim,omitempty"`
+	MemWatermark    MemWatermark    `json:"memWatermark,omitempty"`
+}
+
+type MemAsyncReclaim struct {
+	AsyncRatio          *uint64 `json:"async-ratio"`
+	AsyncDistanceFactor *uint64 `json:"async-distance-factor"`
+}
+
+// MemWatermark to set memory watermark priority
+type MemWatermark struct {
+	WatermarkRatio *int `json:"watermark-ratio"`
+}
+
+type NetIOQOSCfg struct {
+	NetLimits NetLimits `json:"netLimits,omitempty"`
+}
+
+type NetLimits struct {
+	RXBps uint64 `json:"rx-bps"`
+	TXBps uint64 `json:"tx-bps"`
+}
+
+type DiskIOQOS struct {
+	DiskIOWeightCfg DiskIOWeightCfg `json:"diskIOWeightCfg,omitempty"`
+	DiskIOLimitCfg  DiskIOLimitCfg  `json:"diskIOLimitCfg,omitempty"`
+}
+
+type DiskIOWeightCfg struct {
+	Weight uint64 `json:"weight,omitempty"`
+}
+
+type DiskIOLimitCfg struct {
+	ReadIOPS  uint64 `json:"read-iops,omitempty"`
+	WriteIOPS uint64 `json:"write-iops,omitempty"`
+	ReadBPS   uint64 `json:"read-bps,omitempty"`
+	WriteBPS  uint64 `json:"write-bps,omitempty"`
+}
+
+type ServiceQOSEnsurancePolicyStatus struct {
+}
 
 // +genclient
 // +genclient:nonNamespaced
@@ -122,7 +255,7 @@ type PodQOSEnsurancePolicySpec struct {
 	QualityProbe QualityProbe `json:"qualityProbe,omitempty"`
 
 	// ObjectiveEnsurances is an array of ObjectiveEnsurance
-	ObjectiveEnsurances []ObjectiveEnsurance `json:"objectiveEnsurance,omitempty"`
+	ObjectiveEnsurances []QOSEnsurance `json:"objectiveEnsurance,omitempty"`
 }
 
 type QualityProbe struct {
@@ -186,7 +319,7 @@ type NodeQOSEnsurancePolicySpec struct {
 	NodeQualityProbe NodeQualityProbe `json:"nodeQualityProbe,omitempty"`
 
 	// ObjectiveEnsurances is an array of ObjectiveEnsurance
-	ObjectiveEnsurances []ObjectiveEnsurance `json:"objectiveEnsurances,omitempty"`
+	ObjectiveEnsurances []QOSEnsurance `json:"objectiveEnsurances,omitempty"`
 }
 
 type NodeQualityProbe struct {
@@ -213,7 +346,28 @@ type NodeLocalGet struct {
 }
 
 // ObjectiveEnsurance defines the policy that
-type ObjectiveEnsurance struct {
+type QOSEnsurance struct {
+	WaterLine                    WaterLine                      `json:"waterLineEnsurance,omitempty"`
+	LowestPriorityCpuLimit       []lowestPriorityCpuLimit       `json:"lowestPriorityCpuLimit,omitempty"`
+	LowestPriorityCpuLimitPeriod []lowestPriorityCpuLimitPeriod `json:"lowestPriorityCpuLimitPeriod,omitempty"`
+}
+
+type lowestPriorityCpuLimit struct {
+	CoreNum string `json:"coreNum,omitempty"`
+	Percent int64  `json:"percent,omitempty"`
+}
+
+type lowestPriorityCpuLimitPeriod struct {
+	SchduleTime string `json:"offlineCpuLimit,omitempty"`
+	CoreNum     string `json:"coreNum,omitempty"`
+	Percent     int64  `json:"percent,omitempty"`
+}
+
+type OfflineCpuAvoidance struct {
+	Enable bool `json:"offlineCpuLimit,omitempty"`
+}
+
+type WaterLine struct {
 	// Name of the objective ensurance
 	Name string `json:"name,omitempty"`
 
@@ -242,6 +396,10 @@ type ObjectiveEnsurance struct {
 	// +kubebuilder:validation:Enum=None;Preview
 	// +kubebuilder:default=None
 	Strategy AvoidanceActionStrategy `json:"strategy,omitempty"`
+
+	// Action on pods whose priority greater than CPUProrityWaterLine
+	CPUProrityWaterLine int32 `json:"cpuProrityWaterLine,omitempty"`
+	//OnlyActionOnOffline bool `json:"onlyActionOnOffline,omitempty"`
 }
 
 type MetricRule struct {
