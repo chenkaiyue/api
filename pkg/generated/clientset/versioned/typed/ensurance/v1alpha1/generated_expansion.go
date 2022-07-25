@@ -9,3 +9,5 @@ type NodeQOSEnsurancePolicyExpansion interface{}
 type PodQOSEnsurancePolicyExpansion interface{}
 
 type ServicePolicyExpansion interface{}
+
+type ServiceQOSExpansion interface{}

@@ -28,6 +28,10 @@ func (c *FakeEnsuranceV1alpha1) ServicePolicies() v1alpha1.ServicePolicyInterfac
 	return &FakeServicePolicies{c}
 }
 
+func (c *FakeEnsuranceV1alpha1) ServiceQOSs() v1alpha1.ServiceQOSInterface {
+	return &FakeServiceQOSs{c}
+}
+
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
 func (c *FakeEnsuranceV1alpha1) RESTClient() rest.Interface {

@@ -66,6 +66,8 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Ensurance().V1alpha1().PodQOSEnsurancePolicies().Informer()}, nil
 	case ensurancev1alpha1.SchemeGroupVersion.WithResource("servicepolicies"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Ensurance().V1alpha1().ServicePolicies().Informer()}, nil
+	case ensurancev1alpha1.SchemeGroupVersion.WithResource("serviceqoss"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Ensurance().V1alpha1().ServiceQOSs().Informer()}, nil
 
 		// Group=prediction.crane.io, Version=v1alpha1
 	case predictionv1alpha1.SchemeGroupVersion.WithResource("clusternodepredictions"):

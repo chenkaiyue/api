@@ -16,6 +16,8 @@ type Interface interface {
 	PodQOSEnsurancePolicies() PodQOSEnsurancePolicyInformer
 	// ServicePolicies returns a ServicePolicyInformer.
 	ServicePolicies() ServicePolicyInformer
+	// ServiceQOSs returns a ServiceQOSInformer.
+	ServiceQOSs() ServiceQOSInformer
 }
 
 type version struct {
@@ -47,4 +49,9 @@ func (v *version) PodQOSEnsurancePolicies() PodQOSEnsurancePolicyInformer {
 // ServicePolicies returns a ServicePolicyInformer.
 func (v *version) ServicePolicies() ServicePolicyInformer {
 	return &servicePolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+}
+
+// ServiceQOSs returns a ServiceQOSInformer.
+func (v *version) ServiceQOSs() ServiceQOSInformer {
+	return &serviceQOSInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }

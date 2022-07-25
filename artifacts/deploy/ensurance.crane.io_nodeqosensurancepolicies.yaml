@@ -107,98 +107,131 @@ spec:
                 items:
                   description: ObjectiveEnsurance defines the policy that
                   properties:
-                    actionName:
-                      description: Avoidance action to be executed when the rule triggered
-                      type: string
-                    avoidanceThreshold:
-                      default: 1
-                      description: How many times the rule is reach, to trigger avoidance
-                        action. Defaults to 1. Minimum value is 1.
-                      format: int32
-                      type: integer
-                    metricRule:
-                      description: Metric rule define the metric identifier and target
+                    lowestPriorityCpuLimit:
+                      items:
+                        properties:
+                          coreNum:
+                            type: string
+                          percent:
+                            format: int64
+                            type: integer
+                        type: object
+                      type: array
+                    lowestPriorityCpuLimitPeriod:
+                      items:
+                        properties:
+                          coreNum:
+                            type: string
+                          offlineCpuLimit:
+                            type: string
+                          percent:
+                            format: int64
+                            type: integer
+                        type: object
+                      type: array
+                    waterLineEnsurance:
                       properties:
-                        name:
-                          description: Name is the name of the given metric
+                        actionName:
+                          description: Avoidance action to be executed when the rule
+                            triggered
                           type: string
-                        selector:
-                          description: Selector is the selector for the given metric
-                            it is the string-encoded form of a standard kubernetes
-                            label selector
+                        avoidanceThreshold:
+                          default: 1
+                          description: How many times the rule is reach, to trigger
+                            avoidance action. Defaults to 1. Minimum value is 1.
+                          format: int32
+                          type: integer
+                        cpuProrityWaterLine:
+                          description: Action on pods whose priority greater than
+                            CPUProrityWaterLine
+                          format: int32
+                          type: integer
+                        metricRule:
+                          description: Metric rule define the metric identifier and
+                            target
                           properties:
-                            matchExpressions:
-                              description: matchExpressions is a list of label selector
-                                requirements. The requirements are ANDed.
-                              items:
-                                description: A label selector requirement is a selector
-                                  that contains values, a key, and an operator that
-                                  relates the key and values.
-                                properties:
-                                  key:
-                                    description: key is the label key that the selector
-                                      applies to.
+                            name:
+                              description: Name is the name of the given metric
+                              type: string
+                            selector:
+                              description: Selector is the selector for the given
+                                metric it is the string-encoded form of a standard
+                                kubernetes label selector
+                              properties:
+                                matchExpressions:
+                                  description: matchExpressions is a list of label
+                                    selector requirements. The requirements are ANDed.
+                                  items:
+                                    description: A label selector requirement is a
+                                      selector that contains values, a key, and an
+                                      operator that relates the key and values.
+                                    properties:
+                                      key:
+                                        description: key is the label key that the
+                                          selector applies to.
+                                        type: string
+                                      operator:
+                                        description: operator represents a key's relationship
+                                          to a set of values. Valid operators are
+                                          In, NotIn, Exists and DoesNotExist.
+                                        type: string
+                                      values:
+                                        description: values is an array of string
+                                          values. If the operator is In or NotIn,
+                                          the values array must be non-empty. If the
+                                          operator is Exists or DoesNotExist, the
+                                          values array must be empty. This array is
+                                          replaced during a strategic merge patch.
+                                        items:
+                                          type: string
+                                        type: array
+                                    required:
+                                    - key
+                                    - operator
+                                    type: object
+                                  type: array
+                                matchLabels:
+                                  additionalProperties:
                                     type: string
-                                  operator:
-                                    description: operator represents a key's relationship
-                                      to a set of values. Valid operators are In,
-                                      NotIn, Exists and DoesNotExist.
-                                    type: string
-                                  values:
-                                    description: values is an array of string values.
-                                      If the operator is In or NotIn, the values array
-                                      must be non-empty. If the operator is Exists
-                                      or DoesNotExist, the values array must be empty.
-                                      This array is replaced during a strategic merge
-                                      patch.
-                                    items:
-                                      type: string
-                                    type: array
-                                required:
-                                - key
-                                - operator
-                                type: object
-                              type: array
-                            matchLabels:
-                              additionalProperties:
-                                type: string
-                              description: matchLabels is a map of {key,value} pairs.
-                                A single {key,value} in the matchLabels map is equivalent
-                                to an element of matchExpressions, whose key field
-                                is "key", the operator is "In", and the values array
-                                contains only "value". The requirements are ANDed.
+                                  description: matchLabels is a map of {key,value}
+                                    pairs. A single {key,value} in the matchLabels
+                                    map is equivalent to an element of matchExpressions,
+                                    whose key field is "key", the operator is "In",
+                                    and the values array contains only "value". The
+                                    requirements are ANDed.
+                                  type: object
                               type: object
+                            value:
+                              anyOf:
+                              - type: integer
+                              - type: string
+                              description: Value is the target value of the metric
+                                (as a quantity).
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
+                          required:
+                          - name
                           type: object
-                        value:
-                          anyOf:
-                          - type: integer
-                          - type: string
-                          description: Value is the target value of the metric (as
-                            a quantity).
-                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
-                          x-kubernetes-int-or-string: true
+                        name:
+                          description: Name of the objective ensurance
+                          type: string
+                        restoreThreshold:
+                          default: 1
+                          description: How many times the rule can restore. Defaults
+                            to 1. Minimum value is 1.
+                          format: int32
+                          type: integer
+                        strategy:
+                          default: None
+                          description: Action only preview, not to do the real action.
+                            Default AvoidanceActionStrategy is None.
+                          enum:
+                          - None
+                          - Preview
+                          type: string
                       required:
-                      - name
+                      - actionName
                       type: object
-                    name:
-                      description: Name of the objective ensurance
-                      type: string
-                    restoreThreshold:
-                      default: 1
-                      description: How many times the rule can restore. Defaults to
-                        1. Minimum value is 1.
-                      format: int32
-                      type: integer
-                    strategy:
-                      default: None
-                      description: Action only preview, not to do the real action.
-                        Default AvoidanceActionStrategy is None.
-                      enum:
-                      - None
-                      - Preview
-                      type: string
-                  required:
-                  - actionName
                   type: object
                 type: array
               selector:
