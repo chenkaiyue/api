@@ -347,17 +347,22 @@ type NodeLocalGet struct {
 
 // ObjectiveEnsurance defines the policy that
 type QOSEnsurance struct {
-	WaterLine                    WaterLine                      `json:"waterLineEnsurance,omitempty"`
-	LowestPriorityCpuLimit       []lowestPriorityCpuLimit       `json:"lowestPriorityCpuLimit,omitempty"`
-	LowestPriorityCpuLimitPeriod []lowestPriorityCpuLimitPeriod `json:"lowestPriorityCpuLimitPeriod,omitempty"`
+	WaterLine                        WaterLine                          `json:"waterLine,omitempty"`
+	LowestPriorityNodeCpuLimit       LowestPriorityNodeCpuLimit         `json:"lowestPriorityNodeCpuLimit,omitempty"`
+	LowestPriorityCoreCpuLimit       []lowestPriorityCoreCpuLimit       `json:"lowestPriorityCoreCpuLimit,omitempty"`
+	LowestPriorityCoreCpuLimitPeriod []lowestPriorityCoreCpuLimitPeriod `json:"lowestPriorityCoreCpuLimitPeriod,omitempty"`
 }
 
-type lowestPriorityCpuLimit struct {
+type LowestPriorityNodeCpuLimit struct {
+	Percent int64 `json:"percent,omitempty"`
+}
+
+type lowestPriorityCoreCpuLimit struct {
 	CoreNum string `json:"coreNum,omitempty"`
 	Percent int64  `json:"percent,omitempty"`
 }
 
-type lowestPriorityCpuLimitPeriod struct {
+type lowestPriorityCoreCpuLimitPeriod struct {
 	SchduleTime string `json:"offlineCpuLimit,omitempty"`
 	CoreNum     string `json:"coreNum,omitempty"`
 	Percent     int64  `json:"percent,omitempty"`

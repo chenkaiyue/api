@@ -44,7 +44,7 @@ spec:
                 items:
                   description: ObjectiveEnsurance defines the policy that
                   properties:
-                    lowestPriorityCpuLimit:
+                    lowestPriorityCoreCpuLimit:
                       items:
                         properties:
                           coreNum:
@@ -54,7 +54,7 @@ spec:
                             type: integer
                         type: object
                       type: array
-                    lowestPriorityCpuLimitPeriod:
+                    lowestPriorityCoreCpuLimitPeriod:
                       items:
                         properties:
                           coreNum:
@@ -66,7 +66,13 @@ spec:
                             type: integer
                         type: object
                       type: array
-                    waterLineEnsurance:
+                    lowestPriorityNodeCpuLimit:
+                      properties:
+                        percent:
+                          format: int64
+                          type: integer
+                      type: object
+                    waterLine:
                       properties:
                         actionName:
                           description: Avoidance action to be executed when the rule
