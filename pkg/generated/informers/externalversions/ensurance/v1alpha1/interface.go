@@ -10,8 +10,8 @@ import (
 type Interface interface {
 	// AvoidanceActions returns a AvoidanceActionInformer.
 	AvoidanceActions() AvoidanceActionInformer
-	// NodeQOSEnsurancePolicies returns a NodeQOSEnsurancePolicyInformer.
-	NodeQOSEnsurancePolicies() NodeQOSEnsurancePolicyInformer
+	// NodeQOSs returns a NodeQOSInformer.
+	NodeQOSs() NodeQOSInformer
 	// PodQOSEnsurancePolicies returns a PodQOSEnsurancePolicyInformer.
 	PodQOSEnsurancePolicies() PodQOSEnsurancePolicyInformer
 	// ServicePolicies returns a ServicePolicyInformer.
@@ -36,9 +36,9 @@ func (v *version) AvoidanceActions() AvoidanceActionInformer {
 	return &avoidanceActionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
-// NodeQOSEnsurancePolicies returns a NodeQOSEnsurancePolicyInformer.
-func (v *version) NodeQOSEnsurancePolicies() NodeQOSEnsurancePolicyInformer {
-	return &nodeQOSEnsurancePolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// NodeQOSs returns a NodeQOSInformer.
+func (v *version) NodeQOSs() NodeQOSInformer {
+	return &nodeQOSInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
 // PodQOSEnsurancePolicies returns a PodQOSEnsurancePolicyInformer.

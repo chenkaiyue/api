@@ -4,7 +4,7 @@ package v1alpha1
 
 type AvoidanceActionExpansion interface{}
 
-type NodeQOSEnsurancePolicyExpansion interface{}
+type NodeQOSExpansion interface{}
 
 type PodQOSEnsurancePolicyExpansion interface{}
 

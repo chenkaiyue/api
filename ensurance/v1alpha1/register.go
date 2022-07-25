@@ -42,8 +42,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
 		&PodQOSEnsurancePolicy{},
 		&PodQOSEnsurancePolicyList{},
-		&NodeQOSEnsurancePolicy{},
-		&NodeQOSEnsurancePolicyList{},
+		&NodeQOS{},
+		&NodeQOSList{},
+		&ServiceQOS{},
+		&ServiceQOSList{},
 		&AvoidanceAction{},
 		&AvoidanceActionList{},
 	)

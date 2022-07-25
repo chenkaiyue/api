@@ -32,20 +32,28 @@ type ServiceQOS struct {
 }
 
 type ServiceQOSSpec struct {
-	//PodQOSClass PodQOSClass  `json:"podQOSClass,omitempty"`
-	//Example: ["Besteffort"]
+	// QOSClassSelectors, QOSClassSelectors, PrioritySelectors can't coexist
+	// When workload is associated to many ServiceQOS, the priority is sorted as follows: ResourceSelectors > PrioritySelectors > QOSClassSelectors
+	// QOSClassSelectors used to select workload with designated QOSClass, example: ["Besteffort"]
 	QOSClassSelectors []corev1.PodQOSClass `json:"qosClassSelectors,omitempty"`
 
-	//Example:[1000-2000,3000]
-	PriorityClassSelectors []string `json:"priorityClassSelectors,omitempty"`
+	// PrioritySelectors used to select workload with designated priority, Example:[1000-2000,3000]
+	PrioritySelectors []string `json:"prioritySelectors,omitempty"`
 
-	// Selector *metav1.LabelSelector `json:"selector,omitempty"`
+	// ResourceSelectors used to select workload by kind, Name or LabelSelector
 	ResourceSelectors []v1alpha1.ResourceSelector `json:"resourceSelectors,omitempty"`
 
 	ResourceQOS ResourceQOS `json:"resourceQOS,omitempty"`
 
-	//Example: ["Throttle", "Evict"]
-	AllowedNodeQOSActions []string `json:"allowedNodeQOSActions,omitempty"`
+	//QualityProbe defines the way to probe a pod
+	PodQualityProbe PodQualityProbe `json:"podQualityProbe,omitempty"`
+
+	// WaterLine is an array of WaterLine and its corresponding action
+	WaterLine []WaterLine `json:"waterLine,omitempty"`
+
+	// AllowedActions limits the set of actions that the pods is allowed to perform by NodeQOS
+	// Example: ["Throttle", "Evict"]
+	AllowedActions []string `json:"allowedActions,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -58,13 +66,13 @@ type ServiceQOSList struct {
 }
 
 type ResourceQOS struct {
-	CPUQOS    *CPUQOSCfg    `json:"cpuQOS,omitempty"`
-	MemoryQOS *MemoryQOSCfg `json:"memoryQOS,omitempty"`
-	NetIOQOS  *NetIOQOSCfg  `json:"netIOQOS,omitempty"`
-	DiskIOQOS *DiskIOQOS    `json:"diskIOQOS,omitempty"`
+	CPUQOS    *CPUQOS    `json:"cpuQOS,omitempty"`
+	MemoryQOS *MemoryQOS `json:"memoryQOS,omitempty"`
+	NetIOQOS  *NetIOQOS  `json:"netIOQOS,omitempty"`
+	DiskIOQOS *DiskIOQOS `json:"diskIOQOS,omitempty"`
 }
 
-type CPUQOSCfg struct {
+type CPUQOS struct {
 	// CPUPriority define the cpu priority for the pods.
 	// CPUPriority range [0,7], 0 is the highest level.
 	// When the cpu resource is shortage, the low level pods would be throttled
@@ -73,76 +81,87 @@ type CPUQOSCfg struct {
 	// +optional
 	CPUPriority *int32 `json:"cpuPriority,omitempty"`
 
-	ContainerPriority *int32 `json:"containerPriority,omitempty"`
+	ContainerPriority map[string]*int32 `json:"containerPriority,omitempty"`
 
-	CPUBurstCfg CPUBurstCfg `json:"cpuBurstCfg,omitempty"`
+	CPUBurst CPUBurst `json:"cpuBurst,omitempty"`
 
-	HtIsolateCfg HtIsolateCfg `json:"htIsolateCfg,omitempty"`
+	HtIsolation HtIsolation `json:"htIsolation,omitempty"`
 
-	CPUSetPolicyCfg CPUSetPolicyCfg `json:"cpuSetPolicyCfg,omitempty"`
+	CPUSet CPUSet `json:"cpuSet,omitempty"`
 
-	RDTCfg RDTCfg `json:"rdtCfg,omitempty"`
+	RDT RDT `json:"rdt,omitempty"`
+
+	ContainerRDT ContainerRDT `json:"containerRdt,omitempty"`
 }
 
-type RDTCfg struct {
-	L3 string `json:"l3,omitempty"`
-	MB string `json:"mb,omitempty"`
+type RDTValue map[string]string
+
+type RDT struct {
+	L3 RDTValue `json:"l3,omitempty"`
+	MB RDTValue `json:"mb,omitempty"`
 }
 
-type CPUSetPolicyCfg struct {
+type ContainerRDT struct {
+	L3 map[string]RDTValue `json:"l3,omitempty"`
+	MB map[string]RDTValue `json:"mb,omitempty"`
+}
+
+type CPUSet struct {
 	// none/exclusive/share
-	CPUSetPolicy string `json:"cpuSetPolicy,omitempty"`
+	// Provide three polices for cpuset manager:
+	// - none: containers of this pod shares a set of cpus which not allocated to exclusive containers
+	// - exclusive:  containers of this pod monopolize the allocated CPUs , other containers not allowed to use.
+	// - share: containers of this pod runs in theallocated  CPUs , but other containers can also use.
+	CPUSet string `json:"cpuSet,omitempty"`
 }
 
-type HtIsolateCfg struct {
-	HtIsolateEnable bool `json:"htIsolateEnable,omitempty"`
+type HtIsolation struct {
+	Enable bool `json:"enable,omitempty"`
 }
 
-type CPUBurstCfg struct {
+type CPUBurst struct {
 	// BurstQuota define the burst quota for the pods.
 	BurstQuota string `json:"burstQuota,omitempty"`
-
-	//BurstToOtherCpu bool
 }
 
-type MemoryQOSCfg struct {
+type MemoryQOS struct {
 	MemAsyncReclaim MemAsyncReclaim `json:"memAsyncReclaim,omitempty"`
 	MemWatermark    MemWatermark    `json:"memWatermark,omitempty"`
 }
 
 type MemAsyncReclaim struct {
-	AsyncRatio          *uint64 `json:"async-ratio"`
-	AsyncDistanceFactor *uint64 `json:"async-distance-factor"`
+	AsyncRatio          *int64 `json:"asyncRatio"`
+	AsyncDistanceFactor *int64 `json:"asyncDistanceFactor"`
 }
 
 // MemWatermark to set memory watermark priority
 type MemWatermark struct {
-	WatermarkRatio *int `json:"watermark-ratio"`
+	WatermarkRatio *int `json:"watermarkRatio"`
 }
 
-type NetIOQOSCfg struct {
-	NetLimits NetLimits `json:"netLimits,omitempty"`
+type NetIOQOS struct {
+	NetIOLimits NetIOLimits `json:"netIOLimits,omitempty"`
 }
 
-type NetLimits struct {
-	RXBps uint64 `json:"rx-bps"`
-	TXBps uint64 `json:"tx-bps"`
+type NetIOLimits struct {
+	RXBps int64 `json:"rxBps"`
+	TXBps int64 `json:"txBps"`
 }
 
 type DiskIOQOS struct {
-	DiskIOWeightCfg DiskIOWeightCfg `json:"diskIOWeightCfg,omitempty"`
-	DiskIOLimitCfg  DiskIOLimitCfg  `json:"diskIOLimitCfg,omitempty"`
+	DiskIOWeight DiskIOWeight `json:"diskIOWeight,omitempty"`
+	DiskIOLimit  DiskIOLimit  `json:"diskIOLimit,omitempty"`
 }
 
-type DiskIOWeightCfg struct {
-	Weight uint64 `json:"weight,omitempty"`
+type DiskIOWeight struct {
+	Weight int64 `json:"weight,omitempty"`
 }
 
-type DiskIOLimitCfg struct {
-	ReadIOPS  uint64 `json:"read-iops,omitempty"`
-	WriteIOPS uint64 `json:"write-iops,omitempty"`
-	ReadBPS   uint64 `json:"read-bps,omitempty"`
-	WriteBPS  uint64 `json:"write-bps,omitempty"`
+type DiskIOLimit struct {
+	ReadIOPS  int64 `json:"readIOps,omitempty"`
+	WriteIOPS int64 `json:"writeIOps,omitempty"`
+	ReadBPS   int64 `json:"readBps,omitempty"`
+	WriteBPS  int64 `json:"writeBps,omitempty"`
 }
 
 type ServiceQOSEnsurancePolicyStatus struct {
@@ -251,14 +270,14 @@ type PodQOSEnsurancePolicySpec struct {
 	// Selector is a label query over pods that should match the policy
 	Selector metav1.LabelSelector `json:"selector,omitempty"`
 
-	//QualityProbe defines the way to probe a pod
-	QualityProbe QualityProbe `json:"qualityProbe,omitempty"`
+	//PodQualityProbe defines the way to probe a pod
+	PodQualityProbe PodQualityProbe `json:"podQualityProbe,omitempty"`
 
 	// ObjectiveEnsurances is an array of ObjectiveEnsurance
 	ObjectiveEnsurances []QOSEnsurance `json:"objectiveEnsurance,omitempty"`
 }
 
-type QualityProbe struct {
+type PodQualityProbe struct {
 	// HTTPGet specifies the http request to perform.
 	// +optional
 	HTTPGet *corev1.HTTPGetAction `json:"httpGet,omitempty"`
@@ -297,20 +316,20 @@ type PodQOSEnsurancePolicyList struct {
 
 // +genclient
 // +genclient:nonNamespaced
-// +kubebuilder:resource:scope=Cluster,shortName=nep
+// +kubebuilder:resource:scope=Cluster,shortName=nq
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// NodeQOSEnsurancePolicy is the Schema for the nodeqosensurancepolicies API
-type NodeQOSEnsurancePolicy struct {
+// NodeQOS is the Schema for the nodeqos API
+type NodeQOS struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   NodeQOSEnsurancePolicySpec   `json:"spec"`
-	Status NodeQOSEnsurancePolicyStatus `json:"status,omitempty"`
+	Spec   NodeQOSSpec   `json:"spec"`
+	Status NodeQOSStatus `json:"status,omitempty"`
 }
 
-// NodeQOSEnsurancePolicySpec defines the desired status of NodeQOSEnsurancePolicy
-type NodeQOSEnsurancePolicySpec struct {
+// NodeQOSSpec defines the desired status of NodeQOS
+type NodeQOSSpec struct {
 	// Selector is a label query over pods that should match the policy
 	// +optional
 	Selector *metav1.LabelSelector `json:"selector,omitempty"`
@@ -318,8 +337,11 @@ type NodeQOSEnsurancePolicySpec struct {
 	// NodeQualityProbe defines the way to probe a node
 	NodeQualityProbe NodeQualityProbe `json:"nodeQualityProbe,omitempty"`
 
-	// ObjectiveEnsurances is an array of ObjectiveEnsurance
-	ObjectiveEnsurances []QOSEnsurance `json:"objectiveEnsurances,omitempty"`
+	// WaterLine is an array of WaterLine and its corresponding action
+	WaterLine []WaterLine `json:"waterLine,omitempty"`
+
+	// NodeCpuLimit is the cpu limit for LowestPriority workloads in the node
+	NodeCpuLimit NodeCpuLimit `json:"nodeCpuLimit,omitempty"`
 }
 
 type NodeQualityProbe struct {
@@ -347,24 +369,41 @@ type NodeLocalGet struct {
 
 // ObjectiveEnsurance defines the policy that
 type QOSEnsurance struct {
-	WaterLine                    WaterLine                      `json:"waterLineEnsurance,omitempty"`
-	LowestPriorityCpuLimit       []lowestPriorityCpuLimit       `json:"lowestPriorityCpuLimit,omitempty"`
-	LowestPriorityCpuLimitPeriod []lowestPriorityCpuLimitPeriod `json:"lowestPriorityCpuLimitPeriod,omitempty"`
+	WaterLine WaterLine `json:"waterLine,omitempty"`
 }
 
-type lowestPriorityCpuLimit struct {
+type NodeCpuLimit struct {
+	// LowestPriorityNodeCpuLimit is the total cpu usage limit for the LowestPriority workloads in node
+	// Suppress the LowestPriority workloads when the CPU usage of the node exceedes LowestPriorityNodeCpuLimit
+	LowestPriorityNodeCpuLimit LowestPriorityNodeCpuLimit `json:"lowestPriorityNodeCpuLimit,omitempty"`
+
+	// Limit the amount of single core CPU that can be used by LowestPriority workloads
+	LowestPriorityCoreCpuLimit []lowestPriorityCoreCpuLimit `json:"lowestPriorityCoreCpuLimit,omitempty"`
+
+	// Limit the amount of single core CPU and its corresponding time that can be used by LowestPriority workloads
+	LowestPriorityCoreCpuLimitPeriod []lowestPriorityCoreCpuLimitPeriod `json:"lowestPriorityCoreCpuLimitPeriod,omitempty"`
+
+	// LowestPriority workloads only run on CPUs where high priority tasks are not running
+	LowestPriorityCpuAvoidance LowestPriorityCpuAvoidance `json:"lowestPriorityCpuAvoidance,omitempty"`
+}
+
+type LowestPriorityNodeCpuLimit struct {
+	Percent int64 `json:"percent,omitempty"`
+}
+
+type lowestPriorityCoreCpuLimit struct {
 	CoreNum string `json:"coreNum,omitempty"`
 	Percent int64  `json:"percent,omitempty"`
 }
 
-type lowestPriorityCpuLimitPeriod struct {
+type lowestPriorityCoreCpuLimitPeriod struct {
 	SchduleTime string `json:"offlineCpuLimit,omitempty"`
 	CoreNum     string `json:"coreNum,omitempty"`
 	Percent     int64  `json:"percent,omitempty"`
 }
 
-type OfflineCpuAvoidance struct {
-	Enable bool `json:"offlineCpuLimit,omitempty"`
+type LowestPriorityCpuAvoidance struct {
+	Enable bool `json:"enable,omitempty"`
 }
 
 type WaterLine struct {
@@ -397,9 +436,9 @@ type WaterLine struct {
 	// +kubebuilder:default=None
 	Strategy AvoidanceActionStrategy `json:"strategy,omitempty"`
 
-	// Action on pods whose priority greater than CPUProrityWaterLine
-	CPUProrityWaterLine int32 `json:"cpuProrityWaterLine,omitempty"`
-	//OnlyActionOnOffline bool `json:"onlyActionOnOffline,omitempty"`
+	// When reach waterline, Action on pods whose priority greater than CPUProrityActionAllowed
+	// No use in ServiceQOS
+	CPUProrityActionAllowed int32 `json:"cpuProrityActionAllowed,omitempty"`
 }
 
 type MetricRule struct {
@@ -414,16 +453,16 @@ type MetricRule struct {
 }
 
 // NodeQOSEnsurancePolicyStatus defines the observed status of NodeQOSEnsurancePolicy
-type NodeQOSEnsurancePolicyStatus struct {
+type NodeQOSStatus struct {
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// NodeQOSEnsurancePolicyList contains a list of NodeQOSEnsurancePolicy
-type NodeQOSEnsurancePolicyList struct {
+// NodeQOSList contains a list of NodeQOS
+type NodeQOSList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []NodeQOSEnsurancePolicy `json:"items"`
+	Items           []NodeQOS `json:"items"`
 }
 
 type AvoidanceActionSpec struct {

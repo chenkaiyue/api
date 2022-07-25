@@ -11,7 +11,7 @@ import (
 type EnsuranceV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	AvoidanceActionsGetter
-	NodeQOSEnsurancePoliciesGetter
+	NodeQOSsGetter
 	PodQOSEnsurancePoliciesGetter
 	ServicePoliciesGetter
 	ServiceQOSsGetter
@@ -26,8 +26,8 @@ func (c *EnsuranceV1alpha1Client) AvoidanceActions() AvoidanceActionInterface {
 	return newAvoidanceActions(c)
 }
 
-func (c *EnsuranceV1alpha1Client) NodeQOSEnsurancePolicies() NodeQOSEnsurancePolicyInterface {
-	return newNodeQOSEnsurancePolicies(c)
+func (c *EnsuranceV1alpha1Client) NodeQOSs() NodeQOSInterface {
+	return newNodeQOSs(c)
 }
 
 func (c *EnsuranceV1alpha1Client) PodQOSEnsurancePolicies(namespace string) PodQOSEnsurancePolicyInterface {

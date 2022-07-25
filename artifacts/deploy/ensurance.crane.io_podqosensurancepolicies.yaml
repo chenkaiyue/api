@@ -44,29 +44,7 @@ spec:
                 items:
                   description: ObjectiveEnsurance defines the policy that
                   properties:
-                    lowestPriorityCpuLimit:
-                      items:
-                        properties:
-                          coreNum:
-                            type: string
-                          percent:
-                            format: int64
-                            type: integer
-                        type: object
-                      type: array
-                    lowestPriorityCpuLimitPeriod:
-                      items:
-                        properties:
-                          coreNum:
-                            type: string
-                          offlineCpuLimit:
-                            type: string
-                          percent:
-                            format: int64
-                            type: integer
-                        type: object
-                      type: array
-                    waterLineEnsurance:
+                    waterLine:
                       properties:
                         actionName:
                           description: Avoidance action to be executed when the rule
@@ -78,9 +56,10 @@ spec:
                             avoidance action. Defaults to 1. Minimum value is 1.
                           format: int32
                           type: integer
-                        cpuProrityWaterLine:
-                          description: Action on pods whose priority greater than
-                            CPUProrityWaterLine
+                        cpuProrityActionAllowed:
+                          description: When reach waterline, Action on pods whose
+                            priority greater than CPUProrityActionAllowed No use in
+                            ServiceQOS
                           format: int32
                           type: integer
                         metricRule:
@@ -171,8 +150,8 @@ spec:
                       type: object
                   type: object
                 type: array
-              qualityProbe:
-                description: QualityProbe defines the way to probe a pod
+              podQualityProbe:
+                description: PodQualityProbe defines the way to probe a pod
                 properties:
                   httpGet:
                     description: HTTPGet specifies the http request to perform.
