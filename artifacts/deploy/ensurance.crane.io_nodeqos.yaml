@@ -38,9 +38,9 @@ spec:
           spec:
             description: NodeQOSSpec defines the desired status of NodeQOS
             properties:
-              nodeCpuLimit:
-                description: NodeCpuLimit is the cpu limit for LowestPriority workloads
-                  in the node
+              lowestPriorityCpuLimit:
+                description: LowestPriorityCpuLimit is the cpu limit for LowestPriority
+                  workloads in the node
                 properties:
                   lowestPriorityCoreCpuLimit:
                     description: Limit the amount of single core CPU that can be used

@@ -340,8 +340,8 @@ type NodeQOSSpec struct {
 	// WaterLine is an array of WaterLine and its corresponding action
 	WaterLine []WaterLine `json:"waterLine,omitempty"`
 
-	// NodeCpuLimit is the cpu limit for LowestPriority workloads in the node
-	NodeCpuLimit NodeCpuLimit `json:"nodeCpuLimit,omitempty"`
+	// LowestPriorityCpuLimit is the cpu limit for LowestPriority workloads in the node
+	LowestPriorityCpuLimit LowestPriorityCpuLimit `json:"lowestPriorityCpuLimit,omitempty"`
 }
 
 type NodeQualityProbe struct {
@@ -372,7 +372,7 @@ type QOSEnsurance struct {
 	WaterLine WaterLine `json:"waterLine,omitempty"`
 }
 
-type NodeCpuLimit struct {
+type LowestPriorityCpuLimit struct {
 	// LowestPriorityNodeCpuLimit is the total cpu usage limit for the LowestPriority workloads in node
 	// Suppress the LowestPriority workloads when the CPU usage of the node exceedes LowestPriorityNodeCpuLimit
 	LowestPriorityNodeCpuLimit LowestPriorityNodeCpuLimit `json:"lowestPriorityNodeCpuLimit,omitempty"`
