@@ -4,8 +4,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"github.com/gocrane/api/analysis/v1alpha1"
 )
 
 type AvoidanceActionStrategy string
@@ -41,7 +39,7 @@ type ServiceQOSSpec struct {
 	PrioritySelectors []string `json:"prioritySelectors,omitempty"`
 
 	// ResourceSelectors used to select workload by kind, Name or LabelSelector
-	ResourceSelectors []v1alpha1.ResourceSelector `json:"resourceSelectors,omitempty"`
+	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`
 
 	ResourceQOS ResourceQOS `json:"resourceQOS,omitempty"`
 
@@ -54,6 +52,27 @@ type ServiceQOSSpec struct {
 	// AllowedActions limits the set of actions that the pods is allowed to perform by NodeQOS
 	// Example: ["Throttle", "Evict"]
 	AllowedActions []string `json:"allowedActions,omitempty"`
+}
+
+// ResourceSelector describes how the resources will be selected.
+type ResourceSelector struct {
+	// Kind of the resource, e.g. Deployment
+	Kind string `json:"kind"`
+
+	// API version of the resource, e.g. "apps/v1"
+	// +optional
+	APIVersion string `json:"apiVersion"`
+
+	// Name of the resource.
+	// +optional
+	Name string `json:"name,omitempty"`
+
+	// NameSpace of the resource."" for all namespaces.
+	// +optional
+	NameSpace string `json:"nameSpace,omitempty"`
+
+	// +optional
+	LabelSelector *metav1.LabelSelector `json:"labelSelector,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

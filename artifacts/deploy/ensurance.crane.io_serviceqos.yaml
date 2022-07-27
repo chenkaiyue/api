@@ -304,6 +304,9 @@ spec:
                     name:
                       description: Name of the resource.
                       type: string
+                    nameSpace:
+                      description: NameSpace of the resource."" for all namespaces.
+                      type: string
                   required:
                   - kind
                   type: object
