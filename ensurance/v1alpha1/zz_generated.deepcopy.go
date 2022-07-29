@@ -474,7 +474,7 @@ func (in *MemLimit) DeepCopyInto(out *MemLimit) {
 	}
 	if in.PageCacheLimitRetryTimes != nil {
 		in, out := &in.PageCacheLimitRetryTimes, &out.PageCacheLimitRetryTimes
-		*out = new(uint64)
+		*out = new(int64)
 		**out = **in
 	}
 	return
@@ -620,7 +620,7 @@ func (in *NetIOQOS) DeepCopyInto(out *NetIOQOS) {
 	}
 	if in.ContainersPriority != nil {
 		in, out := &in.ContainersPriority, &out.ContainersPriority
-		*out = make(map[string]uint64, len(*in))
+		*out = make(map[string]int64, len(*in))
 		for key, val := range *in {
 			(*out)[key] = val
 		}

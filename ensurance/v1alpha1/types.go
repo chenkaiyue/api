@@ -165,11 +165,11 @@ type MemWatermark struct {
 }
 
 type NetIOQOS struct {
-	NetIOPriority      *int64            `json:"netIOPriority,omitempty"`
-	ContainersPriority map[string]uint64 `json:"containersPriority"`
-	NetIOLimits        NetIOLimits       `json:"netIOLimits,omitempty"`
-	DevNetIOLimits     DevNetIOLimits    `json:"devNetIOLimits,omitempty"`
-	WhitelistPorts     WhitelistPorts    `json:"whitelistPorts,omitempty"`
+	NetIOPriority      *int64           `json:"netIOPriority,omitempty"`
+	ContainersPriority map[string]int64 `json:"containersPriority"`
+	NetIOLimits        NetIOLimits      `json:"netIOLimits,omitempty"`
+	DevNetIOLimits     DevNetIOLimits   `json:"devNetIOLimits,omitempty"`
+	WhitelistPorts     WhitelistPorts   `json:"whitelistPorts,omitempty"`
 }
 
 type DevNetIOLimits map[string]NetIOLimits
@@ -394,8 +394,8 @@ type NetLimits struct {
 }
 
 type MemLimit struct {
-	PageCacheLimitGlobal     *bool   `json:"pageCacheLimitGlobal,omitempty"`
-	PageCacheLimitRetryTimes *uint64 `json:"pageCacheLimitRetryTimes,omitempty"`
+	PageCacheLimitGlobal     *bool  `json:"pageCacheLimitGlobal,omitempty"`
+	PageCacheLimitRetryTimes *int64 `json:"pageCacheLimitRetryTimes,omitempty"`
 }
 
 type NodeQualityProbe struct {
