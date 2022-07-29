@@ -216,6 +216,18 @@ spec:
                         - asyncDistanceFactor
                         - asyncRatio
                         type: object
+                      memPageCacheLimit:
+                        properties:
+                          pageCacheMaxRatio:
+                            format: int64
+                            type: integer
+                          pageCacheReclaimRatio:
+                            format: int64
+                            type: integer
+                        required:
+                        - pageCacheMaxRatio
+                        - pageCacheReclaimRatio
+                        type: object
                       memWatermark:
                         description: MemWatermark to set memory watermark priority
                         properties:
@@ -227,6 +239,25 @@ spec:
                     type: object
                   netIOQOS:
                     properties:
+                      containersPriority:
+                        additionalProperties:
+                          format: int64
+                          type: integer
+                        type: object
+                      devNetIOLimits:
+                        additionalProperties:
+                          properties:
+                            rxBps:
+                              format: int64
+                              type: integer
+                            txBps:
+                              format: int64
+                              type: integer
+                          required:
+                          - rxBps
+                          - txBps
+                          type: object
+                        type: object
                       netIOLimits:
                         properties:
                           rxBps:
@@ -239,6 +270,21 @@ spec:
                         - rxBps
                         - txBps
                         type: object
+                      netIOPriority:
+                        format: int64
+                        type: integer
+                      whitelistPorts:
+                        properties:
+                          lports:
+                            type: string
+                          rports:
+                            type: string
+                        required:
+                        - lports
+                        - rports
+                        type: object
+                    required:
+                    - containersPriority
                     type: object
                 type: object
               resourceSelectors:

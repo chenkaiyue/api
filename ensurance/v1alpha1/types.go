@@ -144,8 +144,14 @@ type CPUBurst struct {
 }
 
 type MemoryQOS struct {
-	MemAsyncReclaim MemAsyncReclaim `json:"memAsyncReclaim,omitempty"`
-	MemWatermark    MemWatermark    `json:"memWatermark,omitempty"`
+	MemAsyncReclaim   MemAsyncReclaim   `json:"memAsyncReclaim,omitempty"`
+	MemWatermark      MemWatermark      `json:"memWatermark,omitempty"`
+	MemPageCacheLimit MemPageCacheLimit `json:"memPageCacheLimit,omitempty"`
+}
+
+type MemPageCacheLimit struct {
+	PageCacheMaxRatio     *int64 `json:"pageCacheMaxRatio"`
+	PageCacheReclaimRatio *int64 `json:"pageCacheReclaimRatio"`
 }
 
 type MemAsyncReclaim struct {
@@ -159,7 +165,18 @@ type MemWatermark struct {
 }
 
 type NetIOQOS struct {
-	NetIOLimits NetIOLimits `json:"netIOLimits,omitempty"`
+	NetIOPriority      *int64            `json:"netIOPriority,omitempty"`
+	ContainersPriority map[string]uint64 `json:"containersPriority"`
+	NetIOLimits        NetIOLimits       `json:"netIOLimits,omitempty"`
+	DevNetIOLimits     DevNetIOLimits    `json:"devNetIOLimits,omitempty"`
+	WhitelistPorts     WhitelistPorts    `json:"whitelistPorts,omitempty"`
+}
+
+type DevNetIOLimits map[string]NetIOLimits
+
+type WhitelistPorts struct {
+	LPorts string `json:"lports"`
+	RPorts string `json:"rports"`
 }
 
 type NetIOLimits struct {
@@ -361,6 +378,24 @@ type NodeQOSSpec struct {
 
 	// LowestPriorityCpuLimit is the cpu limit for LowestPriority workloads in the node
 	LowestPriorityCpuLimit LowestPriorityCpuLimit `json:"lowestPriorityCpuLimit,omitempty"`
+
+	// MemoryLimit is the mem limit in the node
+	MemoryLimit MemLimit `json:"memLimit,omitempty"`
+
+	// NetLimits is the net IO limit in the node
+	NetLimits NetLimits `json:"netLimits,omitempty"`
+}
+
+type NetLimits struct {
+	RXBpsMin *int64 `json:"rxBpsMin"`
+	RXBpsMax *int64 `json:"rxBpsMax"`
+	TXBpsMin *int64 `json:"txBpsMin"`
+	TXBpsMax *int64 `json:"txBpsMax"`
+}
+
+type MemLimit struct {
+	PageCacheLimitGlobal     *bool   `json:"pageCacheLimitGlobal,omitempty"`
+	PageCacheLimitRetryTimes *uint64 `json:"pageCacheLimitRetryTimes,omitempty"`
 }
 
 type NodeQualityProbe struct {
