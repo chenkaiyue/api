@@ -357,8 +357,8 @@ spec:
                   - kind
                   type: object
                 type: array
-              waterLine:
-                description: WaterLine is an array of WaterLine and its corresponding
+              waterMark:
+                description: WaterMark is an array of WaterMark and its corresponding
                   action
                 items:
                   properties:
@@ -372,7 +372,7 @@ spec:
                       format: int32
                       type: integer
                     cpuProrityActionAllowed:
-                      description: When reach waterline, Action on pods whose priority
+                      description: When reach watermark, Action on pods whose priority
                         greater than CPUProrityActionAllowed No use in ServiceQOS
                       format: int32
                       type: integer

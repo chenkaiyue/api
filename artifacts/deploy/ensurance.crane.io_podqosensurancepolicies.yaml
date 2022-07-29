@@ -42,9 +42,9 @@ spec:
               objectiveEnsurance:
                 description: ObjectiveEnsurances is an array of ObjectiveEnsurance
                 items:
-                  description: ObjectiveEnsurance defines the policy that
+                  description: QOSEnsurance defines the policy that
                   properties:
-                    waterLine:
+                    waterMark:
                       properties:
                         actionName:
                           description: Avoidance action to be executed when the rule
@@ -57,7 +57,7 @@ spec:
                           format: int32
                           type: integer
                         cpuProrityActionAllowed:
-                          description: When reach waterline, Action on pods whose
+                          description: When reach watermark, Action on pods whose
                             priority greater than CPUProrityActionAllowed No use in
                             ServiceQOS
                           format: int32

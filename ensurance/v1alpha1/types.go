@@ -46,8 +46,8 @@ type ServiceQOSSpec struct {
 	//QualityProbe defines the way to probe a pod
 	PodQualityProbe PodQualityProbe `json:"podQualityProbe,omitempty"`
 
-	// WaterLine is an array of WaterLine and its corresponding action
-	WaterLine []WaterLine `json:"waterLine,omitempty"`
+	// WaterMark is an array of WaterMark and its corresponding action
+	WaterMark []WaterMark `json:"waterMark,omitempty"`
 
 	// AllowedActions limits the set of actions that the pods is allowed to perform by NodeQOS
 	// Example: ["Throttle", "Evict"]
@@ -373,8 +373,8 @@ type NodeQOSSpec struct {
 	// NodeQualityProbe defines the way to probe a node
 	NodeQualityProbe NodeQualityProbe `json:"nodeQualityProbe,omitempty"`
 
-	// WaterLine is an array of WaterLine and its corresponding action
-	WaterLine []WaterLine `json:"waterLine,omitempty"`
+	// WaterMark is an array of WaterMark and its corresponding action
+	WaterMark []WaterMark `json:"waterMark,omitempty"`
 
 	// LowestPriorityCpuLimit is the cpu limit for LowestPriority workloads in the node
 	LowestPriorityCpuLimit LowestPriorityCpuLimit `json:"lowestPriorityCpuLimit,omitempty"`
@@ -421,9 +421,9 @@ type NodeLocalGet struct {
 	LocalCacheTTLSeconds int32 `json:"localCacheTTLSeconds,omitempty"`
 }
 
-// ObjectiveEnsurance defines the policy that
+// QOSEnsurance defines the policy that
 type QOSEnsurance struct {
-	WaterLine WaterLine `json:"waterLine,omitempty"`
+	WaterMark WaterMark `json:"waterMark,omitempty"`
 }
 
 type LowestPriorityCpuLimit struct {
@@ -460,7 +460,7 @@ type LowestPriorityCpuAvoidance struct {
 	Enable bool `json:"enable,omitempty"`
 }
 
-type WaterLine struct {
+type WaterMark struct {
 	// Name of the objective ensurance
 	Name string `json:"name,omitempty"`
 
@@ -490,7 +490,7 @@ type WaterLine struct {
 	// +kubebuilder:default=None
 	Strategy AvoidanceActionStrategy `json:"strategy,omitempty"`
 
-	// When reach waterline, Action on pods whose priority greater than CPUProrityActionAllowed
+	// When reach watermark, Action on pods whose priority greater than CPUProrityActionAllowed
 	// No use in ServiceQOS
 	CPUProrityActionAllowed int32 `json:"cpuProrityActionAllowed,omitempty"`
 }
