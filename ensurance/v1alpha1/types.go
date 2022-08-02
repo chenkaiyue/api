@@ -35,11 +35,13 @@ type ServiceQOSSpec struct {
 	// QOSClassSelectors used to select workload with designated QOSClass, example: ["Besteffort"]
 	QOSClassSelectors []corev1.PodQOSClass `json:"qosClassSelectors,omitempty"`
 
-	// PrioritySelectors used to select workload with designated priority, Example:[1000-2000,3000]
-	PrioritySelectors []string `json:"prioritySelectors,omitempty"`
+	// PrioritySelectors used to select workload with designated priority, contains an operator and values.
+	PrioritySelectors []PrioritySelectorRequirement `json:"prioritySelectors,omitempty"`
 
 	// ResourceSelectors used to select workload by kind, Name or LabelSelector
 	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`
+
+	NameSpaceSelectors []string `json:"nameSpaceSelectors,omitempty"`
 
 	ResourceQOS ResourceQOS `json:"resourceQOS,omitempty"`
 
@@ -52,6 +54,19 @@ type ServiceQOSSpec struct {
 	// AllowedActions limits the set of actions that the pods is allowed to perform by NodeQOS
 	// Example: ["Throttle", "Evict"]
 	AllowedActions []string `json:"allowedActions,omitempty"`
+}
+
+// PrioritySelectorRequirement is a selector that contains values and an operator
+// that relates the scope name and values.
+type PrioritySelectorRequirement struct {
+	// Represents a scope's relationship to a set of values.
+	// Valid operators are In, NotIn.
+	Operator corev1.ScopeSelectorOperator `json:"operator" protobuf:"bytes,2,opt,name=operator,casttype=ScopedResourceSelectorOperator"`
+	// An array of string values. If the operator is In or NotIn,
+	// the values array must be non-empty.
+	// This array is replaced during a strategic merge patch.
+	// +optional
+	Values []string `json:"values,omitempty" protobuf:"bytes,3,rep,name=values"`
 }
 
 // ResourceSelector describes how the resources will be selected.
