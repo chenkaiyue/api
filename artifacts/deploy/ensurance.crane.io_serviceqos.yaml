@@ -43,8 +43,25 @@ spec:
                   type: string
                 type: array
               nameSpaceSelectors:
+                description: NameSpaceSelectors used to select workload by namespace
                 items:
-                  type: string
+                  description: NameSpaceSelector is a selector that contains values
+                    and an operator that limit the namespace of workload.
+                  properties:
+                    operator:
+                      description: Represents a scope's relationship to a set of values.
+                        Valid operators are In, NotIn.
+                      type: string
+                    values:
+                      description: An array of string values. If the operator is In
+                        or NotIn, the values array must be non-empty. This array is
+                        replaced during a strategic merge patch.
+                      items:
+                        type: string
+                      type: array
+                  required:
+                  - operator
+                  type: object
                 type: array
               podQualityProbe:
                 description: QualityProbe defines the way to probe a pod
@@ -102,8 +119,8 @@ spec:
                 description: PrioritySelectors used to select workload with designated
                   priority, contains an operator and values.
                 items:
-                  description: PrioritySelectorRequirement is a selector that contains
-                    values and an operator that relates the scope name and values.
+                  description: PrioritySelector is a selector that contains values
+                    and an operator that relates the scope name and values.
                   properties:
                     operator:
                       description: Represents a scope's relationship to a set of values.
@@ -131,6 +148,8 @@ spec:
                   type: string
                 type: array
               resourceQOS:
+                description: ResourceQOS describe the QOS limit for cpu,memory,netIO,diskIO
+                  and so on.
                 properties:
                   cpuQOS:
                     properties:
