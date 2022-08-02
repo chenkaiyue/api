@@ -42,27 +42,6 @@ spec:
                 items:
                   type: string
                 type: array
-              nameSpaceSelectors:
-                description: NameSpaceSelectors used to select workload by namespace
-                items:
-                  description: NameSpaceSelector is a selector that contains values
-                    and an operator that limit the namespace of workload.
-                  properties:
-                    operator:
-                      description: Represents a scope's relationship to a set of values.
-                        Valid operators are In, NotIn.
-                      type: string
-                    values:
-                      description: An array of string values. If the operator is In
-                        or NotIn, the values array must be non-empty. This array is
-                        replaced during a strategic merge patch.
-                      items:
-                        type: string
-                      type: array
-                  required:
-                  - operator
-                  type: object
-                type: array
               podQualityProbe:
                 description: QualityProbe defines the way to probe a pod
                 properties:
@@ -115,38 +94,6 @@ spec:
                     format: int32
                     type: integer
                 type: object
-              prioritySelectors:
-                description: PrioritySelectors used to select workload with designated
-                  priority, contains an operator and values.
-                items:
-                  description: PrioritySelector is a selector that contains values
-                    and an operator that relates the scope name and values.
-                  properties:
-                    operator:
-                      description: Represents a scope's relationship to a set of values.
-                        Valid operators are In, NotIn.
-                      type: string
-                    values:
-                      description: An array of string values. If the operator is In
-                        or NotIn, the values array must be non-empty. This array is
-                        replaced during a strategic merge patch.
-                      items:
-                        type: string
-                      type: array
-                  required:
-                  - operator
-                  type: object
-                type: array
-              qosClassSelectors:
-                description: 'QOSClassSelectors, QOSClassSelectors, PrioritySelectors
-                  can''t coexist When workload is associated to many ServiceQOS, the
-                  priority is sorted as follows: ResourceSelectors > PrioritySelectors
-                  > QOSClassSelectors QOSClassSelectors used to select workload with
-                  designated QOSClass, example: ["Besteffort"]'
-                items:
-                  description: PodQOSClass defines the supported qos classes of Pods.
-                  type: string
-                type: array
               resourceQOS:
                 description: ResourceQOS describe the QOS limit for cpu,memory,netIO,diskIO
                   and so on.
@@ -394,6 +341,34 @@ spec:
                       type: string
                   required:
                   - kind
+                  type: object
+                type: array
+              scopeSelector:
+                description: A scope selector represents the AND of the selectors
+                  represented by the scoped-resource selector requirements.
+                items:
+                  properties:
+                    operator:
+                      description: Represents a scope's relationship to a set of values.
+                        Valid operators are In, NotIn.
+                      type: string
+                    scopeName:
+                      description: 'The name of the scope that the selector applies
+                        to. QOSClassSelectors, QOSClassSelectors, PrioritySelectors
+                        can''t coexist When workload is associated to many ServiceQOS,
+                        the priority is sorted as follows: ResourceSelectors > PrioritySelectors
+                        > QOSClassSelectors'
+                      type: string
+                    values:
+                      description: An array of string values. If the operator is In
+                        or NotIn, the values array must be non-empty. This array is
+                        replaced during a strategic merge patch.
+                      items:
+                        type: string
+                      type: array
+                  required:
+                  - operator
+                  - scopeName
                   type: object
                 type: array
               waterMark:

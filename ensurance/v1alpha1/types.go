@@ -30,19 +30,12 @@ type ServiceQOS struct {
 }
 
 type ServiceQOSSpec struct {
-	// QOSClassSelectors, QOSClassSelectors, PrioritySelectors can't coexist
-	// When workload is associated to many ServiceQOS, the priority is sorted as follows: ResourceSelectors > PrioritySelectors > QOSClassSelectors
-	// QOSClassSelectors used to select workload with designated QOSClass, example: ["Besteffort"]
-	QOSClassSelectors []corev1.PodQOSClass `json:"qosClassSelectors,omitempty"`
-
-	// PrioritySelectors used to select workload with designated priority, contains an operator and values.
-	PrioritySelectors []PrioritySelector `json:"prioritySelectors,omitempty"`
+	// A scope selector represents the AND of the selectors represented
+	// by the scoped-resource selector requirements.
+	ScopeSelector []ScopeSelector `json:"scopeSelector,omitempty"`
 
 	// ResourceSelectors used to select workload by kind, Name or LabelSelector
 	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`
-
-	// NameSpaceSelectors used to select workload by namespace
-	NameSpaceSelectors []NameSpaceSelector `json:"nameSpaceSelectors,omitempty"`
 
 	// ResourceQOS describe the QOS limit for cpu,memory,netIO,diskIO and so on.
 	ResourceQOS ResourceQOS `json:"resourceQOS,omitempty"`
@@ -56,6 +49,33 @@ type ServiceQOSSpec struct {
 	// AllowedActions limits the set of actions that the pods is allowed to perform by NodeQOS
 	// Example: ["Throttle", "Evict"]
 	AllowedActions []string `json:"allowedActions,omitempty"`
+}
+
+type ScopeName string
+
+const (
+	// Match all pod objects where spec.activeDeadlineSeconds
+	// QOSClassSelectors used to select workload with designated QOSClass, example: ["Besteffort"]
+	QOSClassSelector ScopeName = "QOSClass"
+	// PrioritySelectors used to select workload with designated priority, contains an operator and values.
+	PrioritySelectors ScopeName = "Priority"
+	// NameSpaceSelectors used to select workload by namespace
+	NameSpaceSelectors ScopeName = "NameSpace"
+)
+
+type ScopeSelector struct {
+	// The name of the scope that the selector applies to.
+	// QOSClassSelectors, QOSClassSelectors, PrioritySelectors can't coexist
+	// When workload is associated to many ServiceQOS, the priority is sorted as follows: ResourceSelectors > PrioritySelectors > QOSClassSelectors
+	ScopeName ScopeName `json:"scopeName" protobuf:"bytes,1,opt,name=scopeName"`
+	// Represents a scope's relationship to a set of values.
+	// Valid operators are In, NotIn.
+	Operator corev1.ScopeSelectorOperator `json:"operator" protobuf:"bytes,2,opt,name=operator,casttype=ScopedResourceSelectorOperator"`
+	// An array of string values. If the operator is In or NotIn,
+	// the values array must be non-empty.
+	// This array is replaced during a strategic merge patch.
+	// +optional
+	Values []string `json:"values,omitempty" protobuf:"bytes,3,rep,name=values"`
 }
 
 // NameSpaceSelector is a selector that contains values and an operator
