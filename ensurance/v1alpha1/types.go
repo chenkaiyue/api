@@ -54,7 +54,6 @@ type ServiceQOSSpec struct {
 type ScopeName string
 
 const (
-	// Match all pod objects where spec.activeDeadlineSeconds
 	// QOSClassSelectors used to select workload with designated QOSClass, example: ["Besteffort"]
 	QOSClassSelector ScopeName = "QOSClass"
 	// PrioritySelectors used to select workload with designated priority, contains an operator and values.
@@ -68,32 +67,6 @@ type ScopeSelector struct {
 	// QOSClassSelectors, QOSClassSelectors, PrioritySelectors can't coexist
 	// When workload is associated to many ServiceQOS, the priority is sorted as follows: ResourceSelectors > PrioritySelectors > QOSClassSelectors
 	ScopeName ScopeName `json:"scopeName" protobuf:"bytes,1,opt,name=scopeName"`
-	// Represents a scope's relationship to a set of values.
-	// Valid operators are In, NotIn.
-	Operator corev1.ScopeSelectorOperator `json:"operator" protobuf:"bytes,2,opt,name=operator,casttype=ScopedResourceSelectorOperator"`
-	// An array of string values. If the operator is In or NotIn,
-	// the values array must be non-empty.
-	// This array is replaced during a strategic merge patch.
-	// +optional
-	Values []string `json:"values,omitempty" protobuf:"bytes,3,rep,name=values"`
-}
-
-// NameSpaceSelector is a selector that contains values and an operator
-// that limit the namespace of workload.
-type NameSpaceSelector struct {
-	// Represents a scope's relationship to a set of values.
-	// Valid operators are In, NotIn.
-	Operator corev1.ScopeSelectorOperator `json:"operator" protobuf:"bytes,2,opt,name=operator,casttype=ScopedResourceSelectorOperator"`
-	// An array of string values. If the operator is In or NotIn,
-	// the values array must be non-empty.
-	// This array is replaced during a strategic merge patch.
-	// +optional
-	Values []string `json:"values,omitempty" protobuf:"bytes,3,rep,name=values"`
-}
-
-// PrioritySelector is a selector that contains values and an operator
-// that relates the scope name and values.
-type PrioritySelector struct {
 	// Represents a scope's relationship to a set of values.
 	// Valid operators are In, NotIn.
 	Operator corev1.ScopeSelectorOperator `json:"operator" protobuf:"bytes,2,opt,name=operator,casttype=ScopedResourceSelectorOperator"`
