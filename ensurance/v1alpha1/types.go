@@ -32,7 +32,7 @@ type ServiceQOS struct {
 type ServiceQOSSpec struct {
 	// A scope selector represents the AND of the selectors represented
 	// by the scoped-resource selector requirements.
-	ScopeSelector []ScopeSelector `json:"scopeSelector,omitempty"`
+	ScopeSelector *ScopeSelector `json:"scopeSelector,omitempty"`
 
 	// ResourceSelectors used to select workload by kind, Name or LabelSelector
 	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`
@@ -63,6 +63,14 @@ const (
 )
 
 type ScopeSelector struct {
+	// A list of scope selector requirements by scope of the resources.
+	// +optional
+	MatchExpressions []ScopedResourceSelectorRequirement `json:"matchExpressions,omitempty" protobuf:"bytes,1,rep,name=matchExpressions"`
+}
+
+// A scoped-resource selector requirement is a selector that contains values, a scope name, and an operator
+// that relates the scope name and values.
+type ScopedResourceSelectorRequirement struct {
 	// The name of the scope that the selector applies to.
 	// QOSClassSelectors, QOSClassSelectors, PrioritySelectors can't coexist
 	// When workload is associated to many ServiceQOS, the priority is sorted as follows: ResourceSelectors > PrioritySelectors > QOSClassSelectors
