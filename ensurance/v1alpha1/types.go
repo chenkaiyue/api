@@ -17,24 +17,25 @@ const (
 
 // +genclient
 // +genclient:nonNamespaced
-// +kubebuilder:resource:scope=Cluster,shortName=sq
+// +kubebuilder:resource:scope=Cluster,shortName=pq
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-type ServiceQOS struct {
+type PodQOS struct {
 	metav1.TypeMeta `json:",inline"`
 
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec ServiceQOSSpec `json:"spec"`
+	Spec PodQOSSpec `json:"spec"`
 
 	Status ServiceQOSEnsurancePolicyStatus `json:"status,omitempty"`
 }
 
-type ServiceQOSSpec struct {
+type PodQOSSpec struct {
 	// A scope selector represents the AND of the selectors represented
 	// by the scoped-resource selector requirements.
 	ScopeSelector *ScopeSelector `json:"scopeSelector,omitempty"`
 
 	// ResourceSelectors used to select workload by kind, Name or LabelSelector
+	// ResourceSelectors takes precedence over ScopeSelector, if ResourceSelectors exist, ScopeSelector will be useless
 	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`
 
 	// ResourceQOS describe the QOS limit for cpu,memory,netIO,diskIO and so on.
@@ -54,12 +55,12 @@ type ServiceQOSSpec struct {
 type ScopeName string
 
 const (
-	// QOSClassSelectors used to select workload with designated QOSClass, example: ["Besteffort"]
+	// QOSClassSelectors used to select workload with designated QOSClass, example: ["BestEffort","Guaranteed"]
 	QOSClassSelector ScopeName = "QOSClass"
 	// PrioritySelectors used to select workload with designated priority, contains an operator and values.
 	PrioritySelectors ScopeName = "Priority"
-	// NameSpaceSelectors used to select workload by namespace
-	NameSpaceSelectors ScopeName = "NameSpace"
+	// NamespaceSelectors used to select workload by namespace
+	NamespaceSelectors ScopeName = "Namespace"
 )
 
 type ScopeSelector struct {
@@ -73,7 +74,7 @@ type ScopeSelector struct {
 type ScopedResourceSelectorRequirement struct {
 	// The name of the scope that the selector applies to.
 	// QOSClassSelectors, QOSClassSelectors, PrioritySelectors can't coexist
-	// When workload is associated to many ServiceQOS, the priority is sorted as follows: ResourceSelectors > PrioritySelectors > QOSClassSelectors
+	// When workload is associated to many PodQOS, the priority is sorted as follows: ResourceSelectors > PrioritySelectors > QOSClassSelectors
 	ScopeName ScopeName `json:"scopeName" protobuf:"bytes,1,opt,name=scopeName"`
 	// Represents a scope's relationship to a set of values.
 	// Valid operators are In, NotIn.
@@ -108,11 +109,11 @@ type ResourceSelector struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// ServiceQOSList contains a list of ServiceQOS
+// ServiceQOSList contains a list of PodQOS
 type ServiceQOSList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []ServiceQOS `json:"items"`
+	Items           []PodQOS `json:"items"`
 }
 
 type ResourceQOS struct {
@@ -407,8 +408,8 @@ type NodeQOSSpec struct {
 	// WaterMark is an array of WaterMark and its corresponding action
 	WaterMark []WaterMark `json:"waterMark,omitempty"`
 
-	// LowestPriorityCpuLimit is the cpu limit for LowestPriority workloads in the node
-	LowestPriorityCpuLimit LowestPriorityCpuLimit `json:"lowestPriorityCpuLimit,omitempty"`
+	// ElasticCpuLimit is the cpu limit for LowestPriority workloads in the node
+	ElasticCpuLimit ElasticCpuLimit `json:"elasticCpuLimit,omitempty"`
 
 	// MemoryLimit is the mem limit in the node
 	MemoryLimit MemLimit `json:"memLimit,omitempty"`
@@ -457,37 +458,37 @@ type QOSEnsurance struct {
 	WaterMark WaterMark `json:"waterMark,omitempty"`
 }
 
-type LowestPriorityCpuLimit struct {
-	// LowestPriorityNodeCpuLimit is the total cpu usage limit for the LowestPriority workloads in node
-	// Suppress the LowestPriority workloads when the CPU usage of the node exceedes LowestPriorityNodeCpuLimit
-	LowestPriorityNodeCpuLimit LowestPriorityNodeCpuLimit `json:"lowestPriorityNodeCpuLimit,omitempty"`
+type ElasticCpuLimit struct {
+	// ElasticNodeCpuLimit is the total cpu usage limit for the workloads which use extended resource in node
+	// Suppress the workloads which use extended resource when the CPU usage of the node exceedes ElasticNodeCpuLimit
+	ElasticNodeCpuLimit ElasticNodeCpuLimit `json:"elasticNodeCpuLimit,omitempty"`
 
-	// Limit the amount of single core CPU that can be used by LowestPriority workloads
-	LowestPriorityCoreCpuLimit []lowestPriorityCoreCpuLimit `json:"lowestPriorityCoreCpuLimit,omitempty"`
+	// Limit the amount of single core CPU that can be used by workloads which use extended resource
+	ElasticCoreCpuLimit []ElasticCoreCpuLimit `json:"elasticCoreCpuLimit,omitempty"`
 
-	// Limit the amount of single core CPU and its corresponding time that can be used by LowestPriority workloads
-	LowestPriorityCoreCpuLimitPeriod []lowestPriorityCoreCpuLimitPeriod `json:"lowestPriorityCoreCpuLimitPeriod,omitempty"`
+	// Limit the amount of single core CPU and its corresponding time that can be used by workloads which use extended resource
+	ElasticCoreCpuLimitPeriod []ElasticCoreCpuLimitPeriod `json:"elasticCoreCpuLimitPeriod,omitempty"`
 
-	// LowestPriority workloads only run on CPUs where high priority tasks are not running
-	LowestPriorityCpuAvoidance LowestPriorityCpuAvoidance `json:"lowestPriorityCpuAvoidance,omitempty"`
+	// Workloads which use extended resource only run on CPUs where high priority tasks are not running
+	ElasticCpuAvoidance ElasticCpuAvoidance `json:"elasticCpuAvoidance,omitempty"`
 }
 
-type LowestPriorityNodeCpuLimit struct {
+type ElasticNodeCpuLimit struct {
 	Percent int64 `json:"percent,omitempty"`
 }
 
-type lowestPriorityCoreCpuLimit struct {
+type ElasticCoreCpuLimit struct {
 	CoreNum string `json:"coreNum,omitempty"`
 	Percent int64  `json:"percent,omitempty"`
 }
 
-type lowestPriorityCoreCpuLimitPeriod struct {
+type ElasticCoreCpuLimitPeriod struct {
 	SchduleTime string `json:"offlineCpuLimit,omitempty"`
 	CoreNum     string `json:"coreNum,omitempty"`
 	Percent     int64  `json:"percent,omitempty"`
 }
 
-type LowestPriorityCpuAvoidance struct {
+type ElasticCpuAvoidance struct {
 	Enable bool `json:"enable,omitempty"`
 }
 
@@ -522,7 +523,7 @@ type WaterMark struct {
 	Strategy AvoidanceActionStrategy `json:"strategy,omitempty"`
 
 	// When reach watermark, Action on pods whose priority greater than CPUProrityActionAllowed
-	// No use in ServiceQOS
+	// No use in PodQOS
 	CPUProrityActionAllowed int32 `json:"cpuProrityActionAllowed,omitempty"`
 }
 

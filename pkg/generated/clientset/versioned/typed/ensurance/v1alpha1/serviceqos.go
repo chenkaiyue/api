@@ -20,17 +20,17 @@ type ServiceQOSsGetter interface {
 	ServiceQOSs() ServiceQOSInterface
 }
 
-// ServiceQOSInterface has methods to work with ServiceQOS resources.
+// ServiceQOSInterface has methods to work with PodQOS resources.
 type ServiceQOSInterface interface {
-	Create(ctx context.Context, serviceQOS *v1alpha1.ServiceQOS, opts v1.CreateOptions) (*v1alpha1.ServiceQOS, error)
-	Update(ctx context.Context, serviceQOS *v1alpha1.ServiceQOS, opts v1.UpdateOptions) (*v1alpha1.ServiceQOS, error)
-	UpdateStatus(ctx context.Context, serviceQOS *v1alpha1.ServiceQOS, opts v1.UpdateOptions) (*v1alpha1.ServiceQOS, error)
+	Create(ctx context.Context, serviceQOS *v1alpha1.PodQOS, opts v1.CreateOptions) (*v1alpha1.PodQOS, error)
+	Update(ctx context.Context, serviceQOS *v1alpha1.PodQOS, opts v1.UpdateOptions) (*v1alpha1.PodQOS, error)
+	UpdateStatus(ctx context.Context, serviceQOS *v1alpha1.PodQOS, opts v1.UpdateOptions) (*v1alpha1.PodQOS, error)
 	Delete(ctx context.Context, name string, opts v1.DeleteOptions) error
 	DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error
-	Get(ctx context.Context, name string, opts v1.GetOptions) (*v1alpha1.ServiceQOS, error)
+	Get(ctx context.Context, name string, opts v1.GetOptions) (*v1alpha1.PodQOS, error)
 	List(ctx context.Context, opts v1.ListOptions) (*v1alpha1.ServiceQOSList, error)
 	Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error)
-	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.ServiceQOS, err error)
+	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.PodQOS, err error)
 	ServiceQOSExpansion
 }
 
@@ -47,8 +47,8 @@ func newServiceQOSs(c *EnsuranceV1alpha1Client) *serviceQOSs {
 }
 
 // Get takes name of the serviceQOS, and returns the corresponding serviceQOS object, and an error if there is any.
-func (c *serviceQOSs) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.ServiceQOS, err error) {
-	result = &v1alpha1.ServiceQOS{}
+func (c *serviceQOSs) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.PodQOS, err error) {
+	result = &v1alpha1.PodQOS{}
 	err = c.client.Get().
 		Resource("serviceqoss").
 		Name(name).
@@ -89,8 +89,8 @@ func (c *serviceQOSs) Watch(ctx context.Context, opts v1.ListOptions) (watch.Int
 }
 
 // Create takes the representation of a serviceQOS and creates it.  Returns the server's representation of the serviceQOS, and an error, if there is any.
-func (c *serviceQOSs) Create(ctx context.Context, serviceQOS *v1alpha1.ServiceQOS, opts v1.CreateOptions) (result *v1alpha1.ServiceQOS, err error) {
-	result = &v1alpha1.ServiceQOS{}
+func (c *serviceQOSs) Create(ctx context.Context, serviceQOS *v1alpha1.PodQOS, opts v1.CreateOptions) (result *v1alpha1.PodQOS, err error) {
+	result = &v1alpha1.PodQOS{}
 	err = c.client.Post().
 		Resource("serviceqoss").
 		VersionedParams(&opts, scheme.ParameterCodec).
@@ -101,8 +101,8 @@ func (c *serviceQOSs) Create(ctx context.Context, serviceQOS *v1alpha1.ServiceQO
 }
 
 // Update takes the representation of a serviceQOS and updates it. Returns the server's representation of the serviceQOS, and an error, if there is any.
-func (c *serviceQOSs) Update(ctx context.Context, serviceQOS *v1alpha1.ServiceQOS, opts v1.UpdateOptions) (result *v1alpha1.ServiceQOS, err error) {
-	result = &v1alpha1.ServiceQOS{}
+func (c *serviceQOSs) Update(ctx context.Context, serviceQOS *v1alpha1.PodQOS, opts v1.UpdateOptions) (result *v1alpha1.PodQOS, err error) {
+	result = &v1alpha1.PodQOS{}
 	err = c.client.Put().
 		Resource("serviceqoss").
 		Name(serviceQOS.Name).
@@ -115,8 +115,8 @@ func (c *serviceQOSs) Update(ctx context.Context, serviceQOS *v1alpha1.ServiceQO
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *serviceQOSs) UpdateStatus(ctx context.Context, serviceQOS *v1alpha1.ServiceQOS, opts v1.UpdateOptions) (result *v1alpha1.ServiceQOS, err error) {
-	result = &v1alpha1.ServiceQOS{}
+func (c *serviceQOSs) UpdateStatus(ctx context.Context, serviceQOS *v1alpha1.PodQOS, opts v1.UpdateOptions) (result *v1alpha1.PodQOS, err error) {
+	result = &v1alpha1.PodQOS{}
 	err = c.client.Put().
 		Resource("serviceqoss").
 		Name(serviceQOS.Name).
@@ -154,8 +154,8 @@ func (c *serviceQOSs) DeleteCollection(ctx context.Context, opts v1.DeleteOption
 }
 
 // Patch applies the patch and returns the patched serviceQOS.
-func (c *serviceQOSs) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.ServiceQOS, err error) {
-	result = &v1alpha1.ServiceQOS{}
+func (c *serviceQOSs) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.PodQOS, err error) {
+	result = &v1alpha1.PodQOS{}
 	err = c.client.Patch(pt).
 		Resource("serviceqoss").
 		Name(name).

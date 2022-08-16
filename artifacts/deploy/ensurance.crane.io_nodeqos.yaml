@@ -38,13 +38,13 @@ spec:
           spec:
             description: NodeQOSSpec defines the desired status of NodeQOS
             properties:
-              lowestPriorityCpuLimit:
-                description: LowestPriorityCpuLimit is the cpu limit for LowestPriority
-                  workloads in the node
+              elasticCpuLimit:
+                description: ElasticCpuLimit is the cpu limit for LowestPriority workloads
+                  in the node
                 properties:
-                  lowestPriorityCoreCpuLimit:
+                  elasticCoreCpuLimit:
                     description: Limit the amount of single core CPU that can be used
-                      by LowestPriority workloads
+                      by workloads which use extended resource
                     items:
                       properties:
                         coreNum:
@@ -54,9 +54,9 @@ spec:
                           type: integer
                       type: object
                     type: array
-                  lowestPriorityCoreCpuLimitPeriod:
+                  elasticCoreCpuLimitPeriod:
                     description: Limit the amount of single core CPU and its corresponding
-                      time that can be used by LowestPriority workloads
+                      time that can be used by workloads which use extended resource
                     items:
                       properties:
                         coreNum:
@@ -68,18 +68,18 @@ spec:
                           type: integer
                       type: object
                     type: array
-                  lowestPriorityCpuAvoidance:
-                    description: LowestPriority workloads only run on CPUs where high
-                      priority tasks are not running
+                  elasticCpuAvoidance:
+                    description: Workloads which use extended resource only run on
+                      CPUs where high priority tasks are not running
                     properties:
                       enable:
                         type: boolean
                     type: object
-                  lowestPriorityNodeCpuLimit:
-                    description: LowestPriorityNodeCpuLimit is the total cpu usage
-                      limit for the LowestPriority workloads in node Suppress the
-                      LowestPriority workloads when the CPU usage of the node exceedes
-                      LowestPriorityNodeCpuLimit
+                  elasticNodeCpuLimit:
+                    description: ElasticNodeCpuLimit is the total cpu usage limit
+                      for the workloads which use extended resource in node Suppress
+                      the workloads which use extended resource when the CPU usage
+                      of the node exceedes ElasticNodeCpuLimit
                     properties:
                       percent:
                         format: int64
@@ -239,7 +239,7 @@ spec:
                       type: integer
                     cpuProrityActionAllowed:
                       description: When reach watermark, Action on pods whose priority
-                        greater than CPUProrityActionAllowed No use in ServiceQOS
+                        greater than CPUProrityActionAllowed No use in PodQOS
                       format: int32
                       type: integer
                     metricRule:

@@ -16,42 +16,42 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// ServiceQOSInformer provides access to a shared informer and lister for
-// ServiceQOSs.
-type ServiceQOSInformer interface {
+// PodQOSInformer provides access to a shared informer and lister for
+// PodQOSs.
+type PodQOSInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ServiceQOSLister
+	Lister() v1alpha1.PodQOSLister
 }
 
-type serviceQOSInformer struct {
+type podQOSInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 }
 
-// NewServiceQOSInformer constructs a new informer for PodQOS type.
+// NewPodQOSInformer constructs a new informer for PodQOS type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewServiceQOSInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredServiceQOSInformer(client, resyncPeriod, indexers, nil)
+func NewPodQOSInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPodQOSInformer(client, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredServiceQOSInformer constructs a new informer for PodQOS type.
+// NewFilteredPodQOSInformer constructs a new informer for PodQOS type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredServiceQOSInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredPodQOSInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.EnsuranceV1alpha1().ServiceQOSs().List(context.TODO(), options)
+				return client.EnsuranceV1alpha1().PodQOSs().List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.EnsuranceV1alpha1().ServiceQOSs().Watch(context.TODO(), options)
+				return client.EnsuranceV1alpha1().PodQOSs().Watch(context.TODO(), options)
 			},
 		},
 		&ensurancev1alpha1.PodQOS{},
@@ -60,14 +60,14 @@ func NewFilteredServiceQOSInformer(client versioned.Interface, resyncPeriod time
 	)
 }
 
-func (f *serviceQOSInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredServiceQOSInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *podQOSInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredPodQOSInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *serviceQOSInformer) Informer() cache.SharedIndexInformer {
+func (f *podQOSInformer) Informer() cache.SharedIndexInformer {
 	return f.factory.InformerFor(&ensurancev1alpha1.PodQOS{}, f.defaultInformer)
 }
 
-func (f *serviceQOSInformer) Lister() v1alpha1.ServiceQOSLister {
-	return v1alpha1.NewServiceQOSLister(f.Informer().GetIndexer())
+func (f *podQOSInformer) Lister() v1alpha1.PodQOSLister {
+	return v1alpha1.NewPodQOSLister(f.Informer().GetIndexer())
 }

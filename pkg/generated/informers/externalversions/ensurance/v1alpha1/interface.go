@@ -12,12 +12,12 @@ type Interface interface {
 	AvoidanceActions() AvoidanceActionInformer
 	// NodeQOSs returns a NodeQOSInformer.
 	NodeQOSs() NodeQOSInformer
+	// PodQOSs returns a PodQOSInformer.
+	PodQOSs() PodQOSInformer
 	// PodQOSEnsurancePolicies returns a PodQOSEnsurancePolicyInformer.
 	PodQOSEnsurancePolicies() PodQOSEnsurancePolicyInformer
 	// ServicePolicies returns a ServicePolicyInformer.
 	ServicePolicies() ServicePolicyInformer
-	// ServiceQOSs returns a ServiceQOSInformer.
-	ServiceQOSs() ServiceQOSInformer
 }
 
 type version struct {
@@ -41,6 +41,11 @@ func (v *version) NodeQOSs() NodeQOSInformer {
 	return &nodeQOSInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
+// PodQOSs returns a PodQOSInformer.
+func (v *version) PodQOSs() PodQOSInformer {
+	return &podQOSInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+}
+
 // PodQOSEnsurancePolicies returns a PodQOSEnsurancePolicyInformer.
 func (v *version) PodQOSEnsurancePolicies() PodQOSEnsurancePolicyInformer {
 	return &podQOSEnsurancePolicyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
@@ -49,9 +54,4 @@ func (v *version) PodQOSEnsurancePolicies() PodQOSEnsurancePolicyInformer {
 // ServicePolicies returns a ServicePolicyInformer.
 func (v *version) ServicePolicies() ServicePolicyInformer {
 	return &servicePolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
-}
-
-// ServiceQOSs returns a ServiceQOSInformer.
-func (v *version) ServiceQOSs() ServiceQOSInformer {
-	return &serviceQOSInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }

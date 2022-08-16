@@ -12,9 +12,9 @@ type EnsuranceV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	AvoidanceActionsGetter
 	NodeQOSsGetter
+	PodQOSsGetter
 	PodQOSEnsurancePoliciesGetter
 	ServicePoliciesGetter
-	ServiceQOSsGetter
 }
 
 // EnsuranceV1alpha1Client is used to interact with features provided by the ensurance.crane.io group.
@@ -30,16 +30,16 @@ func (c *EnsuranceV1alpha1Client) NodeQOSs() NodeQOSInterface {
 	return newNodeQOSs(c)
 }
 
+func (c *EnsuranceV1alpha1Client) PodQOSs() PodQOSInterface {
+	return newPodQOSs(c)
+}
+
 func (c *EnsuranceV1alpha1Client) PodQOSEnsurancePolicies(namespace string) PodQOSEnsurancePolicyInterface {
 	return newPodQOSEnsurancePolicies(c, namespace)
 }
 
 func (c *EnsuranceV1alpha1Client) ServicePolicies() ServicePolicyInterface {
 	return newServicePolicies(c)
-}
-
-func (c *EnsuranceV1alpha1Client) ServiceQOSs() ServiceQOSInterface {
-	return newServiceQOSs(c)
 }
 
 // NewForConfig creates a new EnsuranceV1alpha1Client for the given config.

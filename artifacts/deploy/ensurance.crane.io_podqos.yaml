@@ -6,16 +6,16 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
   creationTimestamp: null
-  name: serviceqoss.ensurance.crane.io
+  name: podqos.ensurance.crane.io
 spec:
   group: ensurance.crane.io
   names:
-    kind: ServiceQOS
-    listKind: ServiceQOSList
-    plural: serviceqoss
+    kind: PodQOS
+    listKind: PodQOSList
+    plural: podqos
     shortNames:
-    - sq
-    singular: serviceqos
+    - pq
+    singular: podqos
   scope: Cluster
   versions:
   - name: v1alpha1
@@ -275,7 +275,8 @@ spec:
                 type: object
               resourceSelectors:
                 description: ResourceSelectors used to select workload by kind, Name
-                  or LabelSelector
+                  or LabelSelector ResourceSelectors takes precedence over ScopeSelector,
+                  if ResourceSelectors exist, ScopeSelector will be useless
                 items:
                   description: ResourceSelector describes how the resources will be
                     selected.
@@ -362,7 +363,7 @@ spec:
                         scopeName:
                           description: 'The name of the scope that the selector applies
                             to. QOSClassSelectors, QOSClassSelectors, PrioritySelectors
-                            can''t coexist When workload is associated to many ServiceQOS,
+                            can''t coexist When workload is associated to many PodQOS,
                             the priority is sorted as follows: ResourceSelectors >
                             PrioritySelectors > QOSClassSelectors'
                           type: string
@@ -395,7 +396,7 @@ spec:
                       type: integer
                     cpuProrityActionAllowed:
                       description: When reach watermark, Action on pods whose priority
-                        greater than CPUProrityActionAllowed No use in ServiceQOS
+                        greater than CPUProrityActionAllowed No use in PodQOS
                       format: int32
                       type: integer
                     metricRule:

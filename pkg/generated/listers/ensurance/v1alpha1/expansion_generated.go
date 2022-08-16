@@ -10,6 +10,10 @@ type AvoidanceActionListerExpansion interface{}
 // NodeQOSLister.
 type NodeQOSListerExpansion interface{}
 
+// PodQOSListerExpansion allows custom methods to be added to
+// PodQOSLister.
+type PodQOSListerExpansion interface{}
+
 // PodQOSEnsurancePolicyListerExpansion allows custom methods to be added to
 // PodQOSEnsurancePolicyLister.
 type PodQOSEnsurancePolicyListerExpansion interface{}
@@ -21,7 +25,3 @@ type PodQOSEnsurancePolicyNamespaceListerExpansion interface{}
 // ServicePolicyListerExpansion allows custom methods to be added to
 // ServicePolicyLister.
 type ServicePolicyListerExpansion interface{}
-
-// ServiceQOSListerExpansion allows custom methods to be added to
-// ServiceQOSLister.
-type ServiceQOSListerExpansion interface{}

@@ -9,30 +9,30 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-// ServiceQOSLister helps list ServiceQOSs.
+// PodQOSLister helps list PodQOSs.
 // All objects returned here must be treated as read-only.
-type ServiceQOSLister interface {
-	// List lists all ServiceQOSs in the indexer.
+type PodQOSLister interface {
+	// List lists all PodQOSs in the indexer.
 	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.PodQOS, err error)
 	// Get retrieves the PodQOS from the index for a given name.
 	// Objects returned here must be treated as read-only.
 	Get(name string) (*v1alpha1.PodQOS, error)
-	ServiceQOSListerExpansion
+	PodQOSListerExpansion
 }
 
-// serviceQOSLister implements the ServiceQOSLister interface.
-type serviceQOSLister struct {
+// podQOSLister implements the PodQOSLister interface.
+type podQOSLister struct {
 	indexer cache.Indexer
 }
 
-// NewServiceQOSLister returns a new ServiceQOSLister.
-func NewServiceQOSLister(indexer cache.Indexer) ServiceQOSLister {
-	return &serviceQOSLister{indexer: indexer}
+// NewPodQOSLister returns a new PodQOSLister.
+func NewPodQOSLister(indexer cache.Indexer) PodQOSLister {
+	return &podQOSLister{indexer: indexer}
 }
 
-// List lists all ServiceQOSs in the indexer.
-func (s *serviceQOSLister) List(selector labels.Selector) (ret []*v1alpha1.PodQOS, err error) {
+// List lists all PodQOSs in the indexer.
+func (s *podQOSLister) List(selector labels.Selector) (ret []*v1alpha1.PodQOS, err error) {
 	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
 		ret = append(ret, m.(*v1alpha1.PodQOS))
 	})
@@ -40,13 +40,13 @@ func (s *serviceQOSLister) List(selector labels.Selector) (ret []*v1alpha1.PodQO
 }
 
 // Get retrieves the PodQOS from the index for a given name.
-func (s *serviceQOSLister) Get(name string) (*v1alpha1.PodQOS, error) {
+func (s *podQOSLister) Get(name string) (*v1alpha1.PodQOS, error) {
 	obj, exists, err := s.indexer.GetByKey(name)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("serviceqos"), name)
+		return nil, errors.NewNotFound(v1alpha1.Resource("podqos"), name)
 	}
 	return obj.(*v1alpha1.PodQOS), nil
 }

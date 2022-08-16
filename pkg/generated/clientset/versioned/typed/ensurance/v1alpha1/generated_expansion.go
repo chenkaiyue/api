@@ -6,8 +6,8 @@ type AvoidanceActionExpansion interface{}
 
 type NodeQOSExpansion interface{}
 
+type PodQOSExpansion interface{}
+
 type PodQOSEnsurancePolicyExpansion interface{}
 
 type ServicePolicyExpansion interface{}
-
-type ServiceQOSExpansion interface{}

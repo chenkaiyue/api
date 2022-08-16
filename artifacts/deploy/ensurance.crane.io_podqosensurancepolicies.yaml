@@ -59,7 +59,7 @@ spec:
                         cpuProrityActionAllowed:
                           description: When reach watermark, Action on pods whose
                             priority greater than CPUProrityActionAllowed No use in
-                            ServiceQOS
+                            PodQOS
                           format: int32
                           type: integer
                         metricRule:
