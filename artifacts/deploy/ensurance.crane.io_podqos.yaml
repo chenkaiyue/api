@@ -344,45 +344,8 @@ spec:
                   - kind
                   type: object
                 type: array
-              scopeSelector:
-                description: A scope selector represents the AND of the selectors
-                  represented by the scoped-resource selector requirements.
-                properties:
-                  matchExpressions:
-                    description: A list of scope selector requirements by scope of
-                      the resources.
-                    items:
-                      description: A scoped-resource selector requirement is a selector
-                        that contains values, a scope name, and an operator that relates
-                        the scope name and values.
-                      properties:
-                        operator:
-                          description: Represents a scope's relationship to a set
-                            of values. Valid operators are In, NotIn.
-                          type: string
-                        scopeName:
-                          description: 'The name of the scope that the selector applies
-                            to. QOSClassSelectors, QOSClassSelectors, PrioritySelectors
-                            can''t coexist When workload is associated to many PodQOS,
-                            the priority is sorted as follows: ResourceSelectors >
-                            PrioritySelectors > QOSClassSelectors'
-                          type: string
-                        values:
-                          description: An array of string values. If the operator
-                            is In or NotIn, the values array must be non-empty. This
-                            array is replaced during a strategic merge patch.
-                          items:
-                            type: string
-                          type: array
-                      required:
-                      - operator
-                      - scopeName
-                      type: object
-                    type: array
-                type: object
-              waterMark:
-                description: WaterMark is an array of WaterMark and its corresponding
-                  action
+              rules:
+                description: Rules is an array of Rules and its corresponding action
                 items:
                   properties:
                     actionName:
@@ -392,11 +355,6 @@ spec:
                       default: 1
                       description: How many times the rule is reach, to trigger avoidance
                         action. Defaults to 1. Minimum value is 1.
-                      format: int32
-                      type: integer
-                    cpuProrityActionAllowed:
-                      description: When reach watermark, Action on pods whose priority
-                        greater than CPUProrityActionAllowed No use in PodQOS
                       format: int32
                       type: integer
                     metricRule:
@@ -484,6 +442,42 @@ spec:
                   - actionName
                   type: object
                 type: array
+              scopeSelector:
+                description: A scope selector represents the AND of the selectors
+                  represented by the scoped-resource selector requirements.
+                properties:
+                  matchExpressions:
+                    description: A list of scope selector requirements by scope of
+                      the resources.
+                    items:
+                      description: A scoped-resource selector requirement is a selector
+                        that contains values, a scope name, and an operator that relates
+                        the scope name and values.
+                      properties:
+                        operator:
+                          description: Represents a scope's relationship to a set
+                            of values. Valid operators are In, NotIn.
+                          type: string
+                        scopeName:
+                          description: 'The name of the scope that the selector applies
+                            to. QOSClassSelectors, QOSClassSelectors, PrioritySelectors
+                            can''t coexist When workload is associated to many PodQOS,
+                            the priority is sorted as follows: ResourceSelectors >
+                            PrioritySelectors > QOSClassSelectors'
+                          type: string
+                        values:
+                          description: An array of string values. If the operator
+                            is In or NotIn, the values array must be non-empty. This
+                            array is replaced during a strategic merge patch.
+                          items:
+                            type: string
+                          type: array
+                      required:
+                      - operator
+                      - scopeName
+                      type: object
+                    type: array
+                type: object
             type: object
           status:
             type: object

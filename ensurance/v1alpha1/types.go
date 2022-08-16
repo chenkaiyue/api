@@ -44,8 +44,8 @@ type PodQOSSpec struct {
 	//QualityProbe defines the way to probe a pod
 	PodQualityProbe PodQualityProbe `json:"podQualityProbe,omitempty"`
 
-	// WaterMark is an array of WaterMark and its corresponding action
-	WaterMark []WaterMark `json:"waterMark,omitempty"`
+	// Rules is an array of Rules and its corresponding action
+	Rules []Rule `json:"rules,omitempty"`
 
 	// AllowedActions limits the set of actions that the pods is allowed to perform by NodeQOS
 	// Example: ["Throttle", "Evict"]
@@ -405,8 +405,8 @@ type NodeQOSSpec struct {
 	// NodeQualityProbe defines the way to probe a node
 	NodeQualityProbe NodeQualityProbe `json:"nodeQualityProbe,omitempty"`
 
-	// WaterMark is an array of WaterMark and its corresponding action
-	WaterMark []WaterMark `json:"waterMark,omitempty"`
+	// Rules is an array of Rules and its corresponding action
+	Rules []Rule `json:"rule,omitempty"`
 
 	// ElasticCpuLimit is the cpu limit for LowestPriority workloads in the node
 	ElasticCpuLimit ElasticCpuLimit `json:"elasticCpuLimit,omitempty"`
@@ -455,7 +455,7 @@ type NodeLocalGet struct {
 
 // QOSEnsurance defines the policy that
 type QOSEnsurance struct {
-	WaterMark WaterMark `json:"waterMark,omitempty"`
+	Rule Rule `json:"rule,omitempty"`
 }
 
 type ElasticCpuLimit struct {
@@ -492,7 +492,7 @@ type ElasticCpuAvoidance struct {
 	Enable bool `json:"enable,omitempty"`
 }
 
-type WaterMark struct {
+type Rule struct {
 	// Name of the objective ensurance
 	Name string `json:"name,omitempty"`
 
@@ -521,10 +521,6 @@ type WaterMark struct {
 	// +kubebuilder:validation:Enum=None;Preview
 	// +kubebuilder:default=None
 	Strategy AvoidanceActionStrategy `json:"strategy,omitempty"`
-
-	// When reach watermark, Action on pods whose priority greater than CPUProrityActionAllowed
-	// No use in PodQOS
-	CPUProrityActionAllowed int32 `json:"cpuProrityActionAllowed,omitempty"`
 }
 
 type MetricRule struct {

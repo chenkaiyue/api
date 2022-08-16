@@ -44,7 +44,7 @@ spec:
                 items:
                   description: QOSEnsurance defines the policy that
                   properties:
-                    waterMark:
+                    rule:
                       properties:
                         actionName:
                           description: Avoidance action to be executed when the rule
@@ -54,12 +54,6 @@ spec:
                           default: 1
                           description: How many times the rule is reach, to trigger
                             avoidance action. Defaults to 1. Minimum value is 1.
-                          format: int32
-                          type: integer
-                        cpuProrityActionAllowed:
-                          description: When reach watermark, Action on pods whose
-                            priority greater than CPUProrityActionAllowed No use in
-                            PodQOS
                           format: int32
                           type: integer
                         metricRule:
